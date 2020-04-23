@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoardScript : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class BoardScript : MonoBehaviour
     public enum PieceColor { NONE, BLACK, WHITE };
     float timer;
     bool AITurn;
+    public Text textbox;
 
     MiniMaxClass miniMax;
     Board board;
@@ -37,6 +39,7 @@ public class BoardScript : MonoBehaviour
                 Move tempMove = miniMax.MiniMax(board, PieceColor.BLACK, 7, 0, int.MinValue, int.MaxValue).Item2;
                 board.MakeMoveReal(tempMove);
                 AITurn = false;
+                textbox.text = "Your turn!";
             }
         } else
         {
@@ -61,11 +64,29 @@ public class BoardScript : MonoBehaviour
             {
                 
                 board.MakeMoveReal(new Move(x, y, PieceColor.WHITE));
+                textbox.text = "Move done!\nAI moves...";
                 timer = 1.5f;
                 //new WaitForSeconds(3);
-                if (board.IsTerminal())
+                if (board.IsTerminal(PieceColor.BLACK))
                 {
-                    //TODO game end logic
+                    if (board.IsTerminal(PieceColor.WHITE))
+                    {
+                        int scorePlayer = board.GetScore(PieceColor.WHITE);
+                        int scoreAI = board.GetScore(PieceColor.BLACK);
+                        if (scorePlayer > scoreAI)
+                        {
+                            textbox.text = "Game over!\nYou won!";
+                        } else if (scorePlayer < scoreAI)
+                        {
+                            textbox.text = "Game over!\nAI won!";
+                        } else
+                        {
+                            textbox.text = "Game over!\nIts a draw!";
+                        }
+                    } else
+                    {
+                        textbox.text = "AI has no more moves!\nYour turn";
+                    }
                 } else
                 {
                     AITurn = true;
